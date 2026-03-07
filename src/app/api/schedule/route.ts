@@ -17,7 +17,7 @@ export async function GET() {
 
   try {
     const scriptPath = path.join(process.cwd(), "python_scripts", "get_schedule.py");
-    const venvPython = path.join(process.cwd(), "python_scripts", "venv", "bin", "python");
+    const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
 
     const { stdout, stderr } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 30000 });
 

@@ -8,12 +8,15 @@ fastf1.Cache.enable_cache(os.path.join(os.path.dirname(__file__), 'cache'))
 
 def get_track_map():
     try:
-        import datetime
-        now = datetime.datetime.now()
+        import pandas as pd
+        now = pd.Timestamp.utcnow().tz_localize(None)
         schedule = fastf1.get_event_schedule(now.year)
         
-        # Get past events up to now
-        past_events = schedule[schedule['EventDate'] <= now]
+        # Filter out testing events
+        schedule = schedule[schedule['EventFormat'] != 'testing']
+        
+        # Get events where the weekend has started (Practice 1 has occurred)
+        past_events = schedule[schedule['Session1DateUtc'] <= now]
         if len(past_events) == 0:
             past_events = fastf1.get_event_schedule(now.year - 1)
             event = past_events.iloc[-1]

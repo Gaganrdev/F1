@@ -5,9 +5,12 @@ import util from 'util';
 
 const execPromise = util.promisify(exec);
 
+export const dynamic = 'force-dynamic';
+
 // Track data barely changes — circuits are fixed. Cache for an hour.
 let trackCache: { data: unknown; timestamp: number } | null = null;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+trackCache = null;
 
 export async function GET() {
   if (trackCache && Date.now() - trackCache.timestamp < CACHE_TTL_MS) {
@@ -16,7 +19,7 @@ export async function GET() {
 
   try {
     const scriptPath = path.join(process.cwd(), 'python_scripts', 'get_track.py');
-    const venvPython = path.join(process.cwd(), 'python_scripts', 'venv', 'bin', 'python');
+    const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
     
     const { stdout } = await execPromise(`${venvPython} ${scriptPath}`, {
       timeout: 60000, // 60s timeout for telemetry

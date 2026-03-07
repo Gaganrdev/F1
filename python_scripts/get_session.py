@@ -51,7 +51,7 @@ def get_latest_session():
         top_10 = []
         leader_time = None  # Store leader's time for gap calculation
         
-        for index, row in results.head(10).iterrows():
+        for index, row in results.head(24).iterrows():
             time_str = "DNF"
             gap_str = ""
             
@@ -68,10 +68,14 @@ def get_latest_session():
                 time_str = str(row['Status'])
 
             # Clean up the output to look like '01:23.456'
-            time_str = time_str.split()[-1] # Grabs final part after '0 days' if present
-            if '.' in time_str and len(time_str.split('.')[1]) > 3:
-                parts = time_str.split('.')
-                time_str = f"{parts[0]}.{parts[1][:3]}"
+            time_parts = time_str.split()
+            if time_parts:
+                time_str = time_parts[-1] # Grabs final part after '0 days' if present
+                if '.' in time_str and len(time_str.split('.')[1]) > 3:
+                    parts = time_str.split('.')
+                    time_str = f"{parts[0]}.{parts[1][:3]}"
+            else:
+                time_str = "DNF"
                 
             if time_str == "NaT":
                 time_str = str(row.get('Status', 'DNF'))
@@ -96,8 +100,13 @@ def get_latest_session():
             except Exception:
                 pass
 
+            try:
+                pos = int(row['Position'])
+            except (ValueError, TypeError):
+                pos = 99
+
             top_10.append({
-                "position": int(row['Position']),
+                "position": pos,
                 "driver": str(row['BroadcastName']),
                 "team": str(row['TeamName']),
                 "time": time_str,
@@ -113,6 +122,8 @@ def get_latest_session():
         
         print(json.dumps(data))
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(json.dumps({"error": str(e)}))
         sys.exit(1)
 

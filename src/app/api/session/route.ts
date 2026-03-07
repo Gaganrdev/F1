@@ -5,6 +5,8 @@ import util from 'util';
 
 const execPromise = util.promisify(exec);
 
+export const dynamic = 'force-dynamic';
+
 // In-memory cache: 5 minutes
 let sessionCache: { data: unknown; timestamp: number } | null = null;
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -18,7 +20,7 @@ export async function GET() {
 
   try {
     const scriptPath = path.join(process.cwd(), 'python_scripts', 'get_session.py');
-    const venvPython = path.join(process.cwd(), 'python_scripts', 'venv', 'bin', 'python');
+    const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
     
     const { stdout } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 30000 });
 
