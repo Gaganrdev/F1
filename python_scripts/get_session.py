@@ -4,7 +4,9 @@ import os
 import sys
 
 # Disable logging for cleaner output
-fastf1.Cache.enable_cache(os.path.join(os.path.dirname(__file__), 'cache'))
+cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
+os.makedirs(cache_dir, exist_ok=True)
+fastf1.Cache.enable_cache(cache_dir)
 
 def get_latest_session():
     try:
