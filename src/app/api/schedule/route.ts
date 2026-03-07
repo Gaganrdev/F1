@@ -19,7 +19,7 @@ export async function GET() {
     const scriptPath = path.join(process.cwd(), "python_scripts", "get_schedule.py");
     const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
 
-    const { stdout, stderr } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 30000 });
+    const { stdout, stderr } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 60000 });
 
     if (stderr) {
       console.warn("Python Warning:", stderr.split("\n").filter((l: string) => !l.includes("INFO") && !l.includes("NotOpenSSL")).join("\n"));

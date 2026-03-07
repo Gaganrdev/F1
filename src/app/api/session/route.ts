@@ -22,14 +22,18 @@ export async function GET() {
     const scriptPath = path.join(process.cwd(), 'python_scripts', 'get_session.py');
     const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
     
-    const { stdout } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 30000 });
+    const { stdout } = await execPromise(`${venvPython} ${scriptPath}`, { timeout: 60000 });
 
     const data = JSON.parse(stdout.trim());
     sessionCache = { data, timestamp: Date.now() };
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (err) {
+    const error = err as any;
     console.error('Session API Error:', error);
     if (sessionCache) return NextResponse.json(sessionCache.data);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal Server Error',
+      details: error.stderr || error.message || String(error)
+    }, { status: 500 });
   }
 }

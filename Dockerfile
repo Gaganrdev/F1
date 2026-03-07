@@ -22,6 +22,11 @@ COPY . .
 RUN python3 -m venv python_scripts/venv
 RUN ./python_scripts/venv/bin/pip install --no-cache-dir -r python_scripts/requirements.txt
 
+# Pre-seed the massive FastF1 cache during build so the server doesn't timeout on first request
+RUN ./python_scripts/venv/bin/python python_scripts/get_schedule.py || true
+RUN ./python_scripts/venv/bin/python python_scripts/get_session.py || true
+RUN ./python_scripts/venv/bin/python python_scripts/get_track.py || true
+
 # Build the Next.js application
 RUN npm run build
 

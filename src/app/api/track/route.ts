@@ -22,16 +22,20 @@ export async function GET() {
     const venvPython = process.cwd() + '/python_scripts/venv/bin/python';
     
     const { stdout } = await execPromise(`${venvPython} ${scriptPath}`, {
-      timeout: 60000, // 60s timeout for telemetry
+      timeout: 90000, // increased to 90s for telemetry fetching on slow cloud setups
       maxBuffer: 1024 * 1024 * 10
     });
 
     const data = JSON.parse(stdout.trim());
     trackCache = { data, timestamp: Date.now() };
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (err) {
+    const error = err as any;
     console.error('Track API Error:', error);
     if (trackCache) return NextResponse.json(trackCache.data);
-    return NextResponse.json({ error: 'Failed to load track data. (FastF1 telemetry might not be available yet)' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to load track data. (FastF1 telemetry might not be available yet)',
+      details: error.stderr || error.message || String(error)
+    }, { status: 500 });
   }
 }
