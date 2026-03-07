@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tell Tailwind v4 to use the class strategy for dark mode.
+   next-themes sets class="dark" on <html>, so this makes all dark: variants work. */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-f1-red: #ff1801;
+  --font-sans: "Inter", "system-ui", "sans-serif";
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
+  /* 
+   * next-themes applies the 'dark' class to the <html> element,
+   * so we scope our dark overrides on :root.dark or html.dark.
+   * We use CSS custom properties for colors so the same component
+   * CSS works in both modes without Tailwind's dark: variants needing
+   * JavaScript to resolve.
+   */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #f8fafc;
+    --bg-gradient-1: hsla(353, 100%, 46%, 0.07);
+    --bg-gradient-2: hsla(217, 100%, 50%, 0.07);
+    --bg-gradient-3: hsla(253, 100%, 45%, 0.07);
+    --text: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.50);
+    --glass-bg-hover: rgba(255, 255, 255, 0.70);
+    --glass-border: rgba(255, 255, 255, 0.80);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --panel-bg: rgba(255, 255, 255, 0.40);
+    --panel-border: rgba(255, 255, 255, 0.60);
+  }
+
+  :root.dark, html.dark {
+    --bg: #0f172a;
+    --bg-gradient-1: hsla(353, 100%, 46%, 0.20);
+    --bg-gradient-2: hsla(217, 100%, 50%, 0.20);
+    --bg-gradient-3: hsla(253, 100%, 45%, 0.20);
+    --text: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.07);
+    --glass-bg-hover: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.10);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.30);
+    --panel-bg: rgba(255, 255, 255, 0.05);
+    --panel-border: rgba(255, 255, 255, 0.10);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--bg);
+    background-image: 
+      radial-gradient(at 0% 0%, var(--bg-gradient-1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, var(--bg-gradient-2) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, var(--bg-gradient-3) 0px, transparent 50%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .glass-panel {
+    background-color: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-card {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    box-shadow: var(--glass-shadow);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .glass-card:hover {
+    background-color: var(--glass-bg-hover);
+  }
+
+  /* Shimmer loading skeleton */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(0,0,0,0.05) 25%,
+      rgba(0,0,0,0.08) 50%,
+      rgba(0,0,0,0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  html.dark .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.03) 25%,
+      rgba(255,255,255,0.07) 50%,
+      rgba(255,255,255,0.03) 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Staggered card entrance */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.5s ease-out both;
+  }
 }
