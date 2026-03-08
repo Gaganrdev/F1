@@ -10,18 +10,20 @@ fastf1.Cache.enable_cache(cache_dir)
 
 def get_schedule():
     try:
-        # Get current year
-        event = fastf1.get_event_schedule(2024).iloc[-2]  # Get a recent race for now as fallback if current is empty
-        
         # In a real app we'd get the actual next/current event, but for simplicity of demo we'll use a reliable past one
         # or attempt to get the latest.
         # Let's try to get the current season's next event:
-        import datetime
-        now = datetime.datetime.now()
+        import pandas as pd
+        now = pd.Timestamp.utcnow().tz_localize(None)
         schedule = fastf1.get_event_schedule(now.year)
         
+        # Filter out testing events
+        schedule = schedule[schedule['EventFormat'] != 'testing']
+        
         # Find the next event
-        next_event = schedule[schedule['EventDate'] > now].iloc[0] if len(schedule[schedule['EventDate'] > now]) > 0 else schedule.iloc[-1]
+        # Add a 1-day buffer to EventDate so the scheduled race stays visible throughout the race day
+        future_events = schedule[schedule['EventDate'] >= now - pd.Timedelta(days=1)]
+        next_event = future_events.iloc[0] if len(future_events) > 0 else schedule.iloc[-1]
         
         event_dict = {
             "name": str(next_event['EventName']),
