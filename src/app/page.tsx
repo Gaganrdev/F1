@@ -2,6 +2,7 @@ import ScheduleCard from "@/components/ScheduleCard";
 import TrackMap from "@/components/TrackMap";
 import ResultsCard from "@/components/ResultsCard";
 import StandingsCard from "@/components/StandingsCard";
+import NewsCard from "@/components/NewsCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
@@ -54,9 +55,14 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Third row: News */}
+      <div className="mt-6">
+        <NewsCard />
+      </div>
+
       {/* Footer */}
       <footer className="mt-12 text-center text-slate-400 dark:text-white/20 text-xs font-mono">
-        DATA: FASTF1 + JOLPICA • F1 DASHBOARD
+        DATA: FASTF1, JOLPICA, MOTORSPORT.COM • F1 DASHBOARD
       </footer>
     </main>
   );
